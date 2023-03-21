@@ -44,7 +44,10 @@ const Controller = {
       pagination: true,
       perPage:5,
       globalSearch:true,
-      inputPlaceholder:"Additional filter..."
+      inputPlaceholder:"Type here if you want to filter by an additional sentence...",
+      onUpdate:function(){
+        Controller.atFilter();
+      }
     });
       
     firstLoad = false;
@@ -52,13 +55,35 @@ const Controller = {
     // Highlight all the table cells containing the search term
     $("td").filter(function() {
       // Use a regular expression to match only the exact word, case insensitive
-      var regex = new RegExp("\\b" + searchTerm + "\\b", "i");
+      var regex = new RegExp(searchTerm, "i");
       return regex.test($(this).text());
     }).html(function(_, html) {
       // Wrap the matching word in a span with a yellow background
-      return html.replace(new RegExp("\\b" + searchTerm + "\\b", "gi"), '<span style="background-color: yellow;">$&</span>');
+      return html.replace(new RegExp(searchTerm, "gi"), '<span style="background-color: yellow;">$&</span>');
     });
   },
+
+  atFilter: () => {
+    // Removes the color from the last filter
+    $('table [style*="background-color: silver;"]').removeAttr('style');
+
+    // Add the new color to the filtere words
+    var filterTh = $('th[colspan="2"][style="padding:2px;"]').eq(0);
+    var filterText = filterTh.find('input').val();
+    
+    if (filterText != ""){
+      // Highlight all the table cells containing the search term
+      $("td").filter(function() {
+        // Use a regular expression to match only the exact word, case insensitive
+        var regex = new RegExp(filterText, "i");
+        return regex.test($(this).text());
+      }).html(function(_, html) {
+        // Wrap the matching word in a span with a yellow background
+        return html.replace(new RegExp(filterText, "gi"), '<span style="background-color: silver;">$&</span>');
+      });
+    }
+    
+  }
 };
 
 const form = document.getElementById("form");
