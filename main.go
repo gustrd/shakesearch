@@ -108,7 +108,11 @@ func (s *Searcher) Search(query string) []string {
 	// Iterate over the indices of the found matches.
 	for _, idx := range idxs {
 		// Extract a substring around the match (250 characters before and after).
-		results = append(results, s.CompleteWorks[idx-250:idx+250])
+		textFound := s.CompleteWorks[idx-250 : idx+250]
+		// Replace the line breaks from txt to html line breaks, improving readability
+		textFoundHtml := strings.Replace(textFound, "\r\n", "<br>", -1)
+		// Append at the result array
+		results = append(results, textFoundHtml)
 	}
 	// Return the results slice.
 	return results
