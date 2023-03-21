@@ -1,3 +1,5 @@
+let firstLoad = true;
+
 const Controller = {
   search: (ev) => {
     ev.preventDefault();
@@ -31,6 +33,11 @@ const Controller = {
     table.style.display = "table";
 
     // Call a function when the table is loaded
+    if (!firstLoad){
+      // Because of a bug at the library this adjust is needed, or the filter becomes doubled.
+      $('th[colspan="2"][style="padding:2px;"]').remove();
+    }
+
     $('#table').fancyTable({
       sortColumn:0,
       sortable: true,
@@ -39,7 +46,9 @@ const Controller = {
       globalSearch:true,
       inputPlaceholder:"Additional filter..."
     });
-
+      
+    firstLoad = false;
+    
     // Highlight all the table cells containing the search term
     $("td").filter(function() {
       // Use a regular expression to match only the exact word, case insensitive
