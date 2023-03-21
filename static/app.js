@@ -5,18 +5,28 @@ const Controller = {
     const data = Object.fromEntries(new FormData(form));
     const response = fetch(`/search?q=${data.query}&s=${data.size}&k=${data.key}`).then((response) => {
       response.json().then((results) => {
-        Controller.updateTable(results);
+        Controller.updateTable(results, data.query);
       });
     });
   },
 
-  updateTable: (results) => {
+  updateTable: (results, searchTerm) => {
     const tableBody = document.getElementById("table-body");
     const rows = [];
     for (let result of results) {
       rows.push("<tr><td>" + result.Text + "</td><td>" + result.WorkTitle + "</td></tr>");
     }
     tableBody.innerHTML = rows.join('');
+
+    // Highlight all the table cells containing the search term
+    $("td").filter(function() {
+      // Use a regular expression to match only the exact word, case insensitive
+      var regex = new RegExp("\\b" + searchTerm + "\\b", "i");
+      return regex.test($(this).text());
+    }).html(function(_, html) {
+      // Wrap the matching word in a span with a yellow background
+      return html.replace(new RegExp("\\b" + searchTerm + "\\b", "gi"), '<span style="background-color: yellow;">$&</span>');
+    });
   },
 };
 
@@ -58,5 +68,7 @@ $(document).ready(function() {
           } 
     }
   })
+
+  
 
 });
