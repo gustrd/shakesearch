@@ -101,7 +101,7 @@ func handleSearch(searcher Searcher) func(w http.ResponseWriter, r *http.Request
 // String with the chars that are considered to be sentence separators, to identify the beginning
 // and the end os sentences
 var (
-	sentenceSeparatorsString = ".,?!"
+	sentenceSeparatorsString = ".,?! "
 )
 
 // Remove the incomplete sentences at the beggining and at the end of the original string
