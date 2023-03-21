@@ -1,11 +1,18 @@
 const Controller = {
   search: (ev) => {
     ev.preventDefault();
+
+    // Start loading spinner
+    document.getElementById('loading-screen').style.display = 'block';
+    
     const form = document.getElementById("form");
     const data = Object.fromEntries(new FormData(form));
     const response = fetch(`/search?q=${data.query}&s=${data.size}&k=${data.key}`).then((response) => {
       response.json().then((results) => {
         Controller.updateTable(results, data.query);
+        
+        //Stops loading spinner
+        document.getElementById('loading-screen').style.display = 'none';
       });
     });
   },
@@ -75,7 +82,5 @@ $(document).ready(function() {
           } 
     }
   })
-
   
-
 });
