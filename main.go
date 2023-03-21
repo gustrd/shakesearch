@@ -7,8 +7,10 @@ import (
 	"index/suffixarray"
 	"io/ioutil"
 	"log"
+	"math"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -60,11 +62,20 @@ func handleSearch(searcher Searcher) func(w http.ResponseWriter, r *http.Request
 			w.Write([]byte("missing search query in URL params"))
 			return
 		}
+
+		size, ok := r.URL.Query()["s"]
+		if !ok || len(query[0]) < 1 {
+			size[0] = "500"
+		}
+
 		// Call the Search method of the Searcher and encode the results as a JSON response
-		results := searcher.Search(query[0])
+		intVar, err := strconv.Atoi(size[0])
+		results := searcher.Search(query[0], intVar)
+
+		// Encode response
 		buf := &bytes.Buffer{}
 		enc := json.NewEncoder(buf)
-		err := enc.Encode(results)
+		err = enc.Encode(results)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("encoding failure"))
@@ -120,7 +131,7 @@ func (s *Searcher) Load(filename string) error {
 // Search takes a query string as a parameter, searches the text using
 // the suffix array index, and builds a slice of strings containing the
 // surrounding 250 characters of each match found.
-func (s *Searcher) Search(query string) []string {
+func (s *Searcher) Search(query string, querySize int) []string {
 	// Create lowercase version of the query
 	lowercaseQuery := strings.ToLower(query)
 	// Search the text using the suffix array index.
@@ -129,12 +140,16 @@ func (s *Searcher) Search(query string) []string {
 	results := []string{}
 	// Iterate over the indices of the found matches.
 	for _, idx := range idxs {
-		// Extract a substring around the match (250 characters before and after).
-		textFound := s.CompleteWorks[idx-250 : idx+250]
+		// Extract a substring around the match (querySize/2 characters before and after).
+		halfQuerySize := int(math.Floor(float64(querySize) / 2.0))
+		textFound := s.CompleteWorks[idx-halfQuerySize : idx+halfQuerySize]
 		// Replace the line breaks from txt to html line breaks, improving readability
 		textFoundHtml := strings.Replace(textFound, "\r\n", "<br>", -1)
 		// Append at the result array, with the sentences trimmed
-		results = append(results, TrimSentences(textFoundHtml))
+		trimmedSentence := TrimSentences(textFoundHtml)
+		if trimmedSentence != "" {
+			results = append(results, trimmedSentence)
+		}
 	}
 	// Return the results slice.
 	return results
