@@ -76,6 +76,28 @@ func handleSearch(searcher Searcher) func(w http.ResponseWriter, r *http.Request
 	}
 }
 
+// String with the chars that are considered to be sentence separators, to identify the beginning
+// and the end os sentences
+var (
+	sentenceSeparatorsString = ".?!"
+)
+
+// Remove the incomplete sentences at the beggining and at the end of the original string
+func TrimSentences(fullSentences string) string {
+	// Find the index of the first separator at the string
+	firstSeparatorIndex := strings.IndexAny(fullSentences, sentenceSeparatorsString)
+	// Find the index of the last separator at the string
+	lastSeparatorIndex := strings.LastIndexAny(fullSentences, sentenceSeparatorsString)
+
+	// If they are not found or are the same return an empty string
+	if firstSeparatorIndex < 0 || lastSeparatorIndex < 0 || firstSeparatorIndex == lastSeparatorIndex {
+		return ""
+	}
+
+	// Return the string between the separators
+	return fullSentences[firstSeparatorIndex+1 : lastSeparatorIndex+1]
+}
+
 // Load reads the contents of the specified file, assigns the contents to the
 // CompleteWorks field of the Searcher, and creates a new suffix array index
 // from the file contents, assigning it to the SuffixArray field.
@@ -111,8 +133,8 @@ func (s *Searcher) Search(query string) []string {
 		textFound := s.CompleteWorks[idx-250 : idx+250]
 		// Replace the line breaks from txt to html line breaks, improving readability
 		textFoundHtml := strings.Replace(textFound, "\r\n", "<br>", -1)
-		// Append at the result array
-		results = append(results, textFoundHtml)
+		// Append at the result array, with the sentences trimmed
+		results = append(results, TrimSentences(textFoundHtml))
 	}
 	// Return the results slice.
 	return results
