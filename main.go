@@ -64,13 +64,24 @@ func handleSearch(searcher Searcher) func(w http.ResponseWriter, r *http.Request
 		}
 
 		size, ok := r.URL.Query()["s"]
-		if !ok || len(query[0]) < 1 {
+		if !ok || len(size[0]) < 1 {
 			size[0] = "500"
+		}
+
+		openAiApiKey, ok := r.URL.Query()["k"]
+		if !ok || len(openAiApiKey[0]) < 1 {
+			openAiApiKey[0] = ""
 		}
 
 		// Call the Search method of the Searcher and encode the results as a JSON response
 		intVar, err := strconv.Atoi(size[0])
 		results := searcher.Search(query[0], intVar)
+
+		//Verify if results is empty, if it the query can be sent to autocorrect
+		if len(results) == 0 && openAiApiKey[0] != "" {
+			correctedQuery := searcher.Correct(query[0], openAiApiKey[0])
+			results = searcher.Search(correctedQuery, intVar)
+		}
 
 		// Encode response
 		buf := &bytes.Buffer{}
@@ -153,4 +164,89 @@ func (s *Searcher) Search(query string, querySize int) []string {
 	}
 	// Return the results slice.
 	return results
+}
+
+type OpenAiJson struct {
+	ID      string `json:"id"`
+	Object  string `json:"object"`
+	Created int    `json:"created"`
+	Model   string `json:"model"`
+	Choices []struct {
+		Text         string `json:"text"`
+		Index        int    `json:"index"`
+		Logprobs     any    `json:"logprobs"`
+		FinishReason string `json:"finish_reason"`
+	} `json:"choices"`
+	Usage struct {
+		PromptTokens     int `json:"prompt_tokens"`
+		CompletionTokens int `json:"completion_tokens"`
+		TotalTokens      int `json:"total_tokens"`
+	} `json:"usage"`
+}
+
+// Uses OpenAI GPT-3 API to try to correct a misspeled word or sentence
+func (s *Searcher) Correct(query string, apiKey string) string {
+	// Set API endpoint
+	apiURL := "https://api.openai.com/v1/completions"
+
+	// Set API request headers
+	headers := map[string]string{
+		"Content-Type":  "application/json",
+		"Authorization": "Bearer " + apiKey,
+	}
+
+	// Set API request data
+	data := map[string]interface{}{
+		"model": "text-davinci-003",
+		"prompt": "The following sentece from Shakespeare's work is misspelled. Give me the correct sentence.\n\"" +
+			query +
+			"\"",
+		"temperature":       0.7,
+		"max_tokens":        256,
+		"top_p":             1,
+		"frequency_penalty": 0,
+		"presence_penalty":  0,
+	}
+
+	// Marshal data to JSON
+	payload, err := json.Marshal(data)
+	if err != nil {
+		panic(err)
+	}
+
+	// Create HTTP client and request
+	client := &http.Client{}
+	req, err := http.NewRequest("POST", apiURL, bytes.NewBuffer(payload))
+	if err != nil {
+		panic(err)
+	}
+
+	// Set headers on request
+	for key, value := range headers {
+		req.Header.Set(key, value)
+	}
+
+	// Send request and get response
+	res, err := client.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	defer res.Body.Close()
+
+	// Decode response JSON
+	var response OpenAiJson
+	err = json.NewDecoder(res.Body).Decode(&response)
+	if err != nil {
+		panic(err)
+	}
+
+	//Remove quotes and new lines
+	responseString := strings.ReplaceAll(response.Choices[0].Text, "\"", "")
+	responseString = strings.ReplaceAll(responseString, "\n", "")
+
+	// DEBUG - Print response
+	fmt.Println(responseString)
+
+	// Return string without the new lines and without double quotes
+	return strings.ReplaceAll(responseString, "\n", "")
 }
