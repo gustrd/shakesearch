@@ -139,18 +139,48 @@ func (s *Searcher) Load(filename string) error {
 	return nil
 }
 
+// Recover the work title that is before given index by using heuristics.
+func (s *Searcher) RecoverWorkTitle(idx int) string {
+	// Cuts the complete works until the point of the found index
+	workToIndex := s.CompleteWorks[:idx]
+	// Split the string at newlines
+	linesList := strings.Split(workToIndex, "\r\n")
+	// Variable to store if 'Contents' was found
+	contentsLineFound := false
+	// Loops through the list at the inverse order
+	for i := len(linesList) - 1; i >= 0; i-- {
+		// If the contents line was found, return the next not empty string
+		if contentsLineFound && linesList[i] != "" {
+			return linesList[i]
+		}
+		// Searches for the line 'Contents', that by definition is right after the title
+		if linesList[i] == "Contents" {
+			contentsLineFound = true
+		}
+	}
+
+	// If no title was found return "?"
+	return "?"
+}
+
+type SearchResult struct {
+	Text      string
+	WorkTitle string
+}
+
 // Search takes a query string as a parameter, searches the text using
 // the suffix array index, and builds a slice of strings containing the
 // surrounding 250 characters of each match found.
-func (s *Searcher) Search(query string, querySize int) []string {
+func (s *Searcher) Search(query string, querySize int) []SearchResult {
 	// Create lowercase version of the query
 	lowercaseQuery := strings.ToLower(query)
 	// Search the text using the suffix array index.
 	idxs := s.SuffixArray.Lookup([]byte(lowercaseQuery), -1)
 	// Initialize a results slice to store the found matches.
-	results := []string{}
+	results := []SearchResult{}
 	// Iterate over the indices of the found matches.
 	for _, idx := range idxs {
+		workTitle := s.RecoverWorkTitle(idx)
 		// Extract a substring around the match (querySize/2 characters before and after).
 		halfQuerySize := int(math.Floor(float64(querySize) / 2.0))
 		textFound := s.CompleteWorks[idx-halfQuerySize : idx+halfQuerySize]
@@ -159,7 +189,7 @@ func (s *Searcher) Search(query string, querySize int) []string {
 		// Append at the result array, with the sentences trimmed
 		trimmedSentence := TrimSentences(textFoundHtml)
 		if trimmedSentence != "" {
-			results = append(results, trimmedSentence)
+			results = append(results, SearchResult{Text: trimmedSentence, WorkTitle: workTitle})
 		}
 	}
 	// Return the results slice.
@@ -243,9 +273,6 @@ func (s *Searcher) Correct(query string, apiKey string) string {
 	//Remove quotes and new lines
 	responseString := strings.ReplaceAll(response.Choices[0].Text, "\"", "")
 	responseString = strings.ReplaceAll(responseString, "\n", "")
-
-	// DEBUG - Print response
-	fmt.Println(responseString)
 
 	// Return string without the new lines and without double quotes
 	return strings.ReplaceAll(responseString, "\n", "")
