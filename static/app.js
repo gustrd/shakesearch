@@ -26,9 +26,11 @@ const Controller = {
     // Call a function when the table is loaded
     $('#table').fancyTable({
       sortColumn:0,
+      sortable: true,
       pagination: true,
       perPage:5,
-      globalSearch:true
+      globalSearch:true,
+      inputPlaceholder:"Additional filter..."
     });
 
     // Highlight all the table cells containing the search term
