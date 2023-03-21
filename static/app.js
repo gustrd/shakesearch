@@ -11,12 +11,17 @@ const Controller = {
   },
 
   updateTable: (results, searchTerm) => {
+    // Inserts the rows
     const tableBody = document.getElementById("table-body");
     const rows = [];
     for (let result of results) {
       rows.push("<tr><td>" + result.Text + "</td><td>" + result.WorkTitle + "</td></tr>");
     }
     tableBody.innerHTML = rows.join('');
+
+    // Shows the table
+    var table = document.getElementById("table");
+    table.style.display = "table";
 
     // Highlight all the table cells containing the search term
     $("td").filter(function() {

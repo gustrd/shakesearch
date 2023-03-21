@@ -17,10 +17,109 @@ html {
   line-height: 1.4;
 }
 
-/* Table border */
+/* Body design */
 
-table, th, td {
-  border: 1px solid black;
+container {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Form design */
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-color: #f5f5f5;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1);
+  font-family: 'Helvetica Neue', sans-serif;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  text-align: left;
+}
+
+input[type='query'],
+input[type='size'],
+input[type='key'],
+textarea {
+  display: block;
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border-radius: 0.25rem;
+  border: none;
+  background-color: #f8f8f8;
+  box-shadow: 0 0 0.25rem rgba(0, 0, 0, 0.1);
+  font-size: 1rem;
+  font-family: 'Helvetica Neue', sans-serif;
+}
+
+input[type='submit'] {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  margin-top: 1rem;
+  border-radius: 0.25rem;
+  border: none;
+  background-color: #f5f5f5;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+input[type='submit']:hover {
+  background-color: #f5f5f5;
+}
+
+/* Table design */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-family: 'Helvetica Neue', sans-serif;
+}
+
+thead {
+  background-color: #f5f5f5cc;
+}
+
+thead th {
+  padding: 1rem;
+  font-weight: bold;
+  text-align: left;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f8f8f8;
+}
+
+tbody td {
+  padding: 1rem;
+  border-bottom: 1px solid #ddd;
+}
+
+tbody td:last-child {
+  border-right: 1px solid #ddd;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
 }
 
 /*
@@ -199,7 +298,6 @@ textarea {
      ========================================================================== */
 
 @media print {
-  *,
   *::before,
   *::after {
     background: #fff !important;
