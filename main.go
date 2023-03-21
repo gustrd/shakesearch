@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 )
 
 func main() {
@@ -45,6 +46,7 @@ func main() {
 // Define the Searcher struct
 type Searcher struct {
 	CompleteWorks string
+	CompleteWorksLowercase string
 	SuffixArray   *suffixarray.Index
 }
 
@@ -85,9 +87,11 @@ func (s *Searcher) Load(filename string) error {
 	}
 	// Assign the file contents to the CompleteWorks field.
 	s.CompleteWorks = string(dat)
+	// Create a lowercase version to make case insensitive searches
+	s.CompleteWorksLowercase = strings.ToLower(s.CompleteWorks) 
 	// Create a new suffix array index from the file contents and
 	// assign it to the SuffixArray field.
-	s.SuffixArray = suffixarray.New(dat)
+	s.SuffixArray = suffixarray.New([]byte(s.CompleteWorksLowercase))
 	return nil
 }
 
@@ -95,8 +99,10 @@ func (s *Searcher) Load(filename string) error {
 // the suffix array index, and builds a slice of strings containing the
 // surrounding 250 characters of each match found.
 func (s *Searcher) Search(query string) []string {
+	// Create lowercase version of the query
+	lowercaseQuery := strings.ToLower(query) 
 	// Search the text using the suffix array index.
-	idxs := s.SuffixArray.Lookup([]byte(query), -1)
+	idxs := s.SuffixArray.Lookup([]byte(lowercaseQuery), -1)
 	// Initialize a results slice to store the found matches.
 	results := []string{}
 	// Iterate over the indices of the found matches.
