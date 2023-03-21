@@ -45,9 +45,9 @@ func main() {
 
 // Define the Searcher struct
 type Searcher struct {
-	CompleteWorks string
+	CompleteWorks          string
 	CompleteWorksLowercase string
-	SuffixArray   *suffixarray.Index
+	SuffixArray            *suffixarray.Index
 }
 
 // handleSearch takes a Searcher as a parameter and returns an HTTP handler function
@@ -88,7 +88,7 @@ func (s *Searcher) Load(filename string) error {
 	// Assign the file contents to the CompleteWorks field.
 	s.CompleteWorks = string(dat)
 	// Create a lowercase version to make case insensitive searches
-	s.CompleteWorksLowercase = strings.ToLower(s.CompleteWorks) 
+	s.CompleteWorksLowercase = strings.ToLower(s.CompleteWorks)
 	// Create a new suffix array index from the file contents and
 	// assign it to the SuffixArray field.
 	s.SuffixArray = suffixarray.New([]byte(s.CompleteWorksLowercase))
@@ -100,7 +100,7 @@ func (s *Searcher) Load(filename string) error {
 // surrounding 250 characters of each match found.
 func (s *Searcher) Search(query string) []string {
 	// Create lowercase version of the query
-	lowercaseQuery := strings.ToLower(query) 
+	lowercaseQuery := strings.ToLower(query)
 	// Search the text using the suffix array index.
 	idxs := s.SuffixArray.Lookup([]byte(lowercaseQuery), -1)
 	// Initialize a results slice to store the found matches.
