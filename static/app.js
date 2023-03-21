@@ -23,6 +23,14 @@ const Controller = {
     var table = document.getElementById("table");
     table.style.display = "table";
 
+    // Call a function when the table is loaded
+    $('#table').fancyTable({
+      sortColumn:0,
+      pagination: true,
+      perPage:5,
+      globalSearch:true
+    });
+
     // Highlight all the table cells containing the search term
     $("td").filter(function() {
       // Use a regular expression to match only the exact word, case insensitive
@@ -40,14 +48,6 @@ form.addEventListener("submit", Controller.search);
 
 $(document).ready(function() {
   // This function will be called when the HTML document has finished loading
-
-  // Call a function when the table is loaded
-  $('#table').fancyTable({
-    sortColumn:0,
-    pagination: true,
-    perPage:5,
-    globalSearch:true
-  }),
 
   $("#form").validate({
     rules : {
