@@ -55,8 +55,8 @@ type Searcher struct {
 
 // Define the Results structs
 type SearchResult struct {
-	Text      string
-	WorkTitle string
+	Text string
+	Play string
 }
 
 type SearchResponse struct {
@@ -221,6 +221,28 @@ func (s *Searcher) RecoverWorkTitle(idx int) string {
 	return "?"
 }
 
+// Recover the work title that is before given index by using heuristics.
+func (s *Searcher) RecoverMatchAct(idx int) string {
+	// Cuts the complete works until the point of the found index
+	workToIndex := s.CompleteWorks[:idx]
+	// Split the string at newlines
+	linesList := strings.Split(workToIndex, "\r\n")
+	// Loops through the list at the inverse order
+	for i := len(linesList) - 1; i >= 0; i-- {
+		// Finds the first line down to up that starts with "ACT "
+		if strings.HasPrefix(linesList[i], "ACT ") {
+			actLine := linesList[i]
+			// Needs to remove the string slice following the dot, because it can have a wrong scene
+			actLineSubString := strings.Split(actLine, ".")[0]
+
+			return actLineSubString
+		}
+	}
+
+	// If no title was found returns ""
+	return ""
+}
+
 // Search takes a query string as a parameter, searches the text using
 // the suffix array index, and builds a slice of strings containing the
 // surrounding 250 characters of each match found.
@@ -247,6 +269,7 @@ func (s *Searcher) Search(query string, querySize int, useMatchWholeWord bool) [
 	// Iterate over the indices of the found matches.
 	for _, idx := range idxs {
 		workTitle := s.RecoverWorkTitle(idx)
+		workAct := s.RecoverMatchAct(idx)
 		// Extract a substring around the match (querySize/2 characters before and after).
 		halfQuerySize := int(math.Floor(float64(querySize) / 2.0))
 		textFound := s.CompleteWorks[idx-halfQuerySize : idx+halfQuerySize]
@@ -255,7 +278,11 @@ func (s *Searcher) Search(query string, querySize int, useMatchWholeWord bool) [
 		// Append at the result array, with the sentences trimmed
 		trimmedSentence := TrimSentences(textFoundHtml)
 		if trimmedSentence != "" {
-			results = append(results, SearchResult{Text: trimmedSentence, WorkTitle: workTitle})
+			play := workTitle
+			if workAct != "" {
+				play = play + " - " + workAct
+			}
+			results = append(results, SearchResult{Text: trimmedSentence, Play: play})
 		}
 	}
 	// Return the results slice.

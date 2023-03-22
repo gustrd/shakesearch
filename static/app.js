@@ -52,7 +52,7 @@ const Controller = {
     const tableBody = document.getElementById("table-body");
     const rows = [];
     for (let result of results) {
-      rows.push("<tr><td>" + result.Text + "</td><td>" + result.WorkTitle + "</td></tr>");
+      rows.push("<tr><td>" + result.Text + "</td><td>" + result.Play + "</td></tr>");
     }
     tableBody.innerHTML = rows.join('');
 
