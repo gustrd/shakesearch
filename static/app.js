@@ -10,9 +10,13 @@ const Controller = {
     const form = document.getElementById("form");
     const data = Object.fromEntries(new FormData(form));
     const response = fetch(`/search?q=${data.query}&s=${data.size}&k=${data.key}`).then((response) => {
-      response.json().then((results) => {
-        Controller.updateTable(results, data.query);
+      response.json().then((response) => {
+        Controller.updateTable(response.Results, response.Query);
         
+        //Show result message
+        document.getElementById('result-message').style.display = 'block';
+        document.getElementById('result-message').textContent = response.Message;
+
         //Stops loading spinner
         document.getElementById('loading-screen').style.display = 'none';
       });

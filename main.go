@@ -74,19 +74,53 @@ func handleSearch(searcher Searcher) func(w http.ResponseWriter, r *http.Request
 		}
 
 		// Call the Search method of the Searcher and encode the results as a JSON response
+		originalQuery := query[0]
+		correctedQuery := ""
+
 		intVar, err := strconv.Atoi(size[0])
-		results := searcher.Search(query[0], intVar)
+		results := searcher.Search(originalQuery, intVar)
 
 		//Verify if results is empty, if it the query can be sent to autocorrect
 		if len(results) == 0 && openAiApiKey[0] != "" {
-			correctedQuery := searcher.Correct(query[0], openAiApiKey[0])
+			correctedQuery = searcher.Correct(originalQuery, openAiApiKey[0])
 			results = searcher.Search(correctedQuery, intVar)
+		}
+
+		// Prepare used query to response
+		finalQuery := ""
+		if correctedQuery != "" {
+			finalQuery = correctedQuery
+		} else {
+			finalQuery = originalQuery
+		}
+
+		// Create the response JSON
+		response := SearchResponse{}
+		response.Results = results
+		response.Query = finalQuery
+
+		resultCount := len(response.Results)
+		resultsString := ""
+		if resultCount > 1 {
+			resultsString = "a total of " + strconv.Itoa(resultCount) + " results"
+		} else if resultCount == 1 {
+			resultsString = "a total of " + strconv.Itoa(resultCount) + " result"
+		} else {
+			resultsString = "no results. Please try with another query"
+		}
+
+		if correctedQuery != "" {
+			response.Message = "The query was corrected to '" + correctedQuery + "' by the OpenAI API. The search returned " +
+				resultsString + "."
+		} else {
+			response.Message = "The query was '" + originalQuery + "'. The search returned " +
+				resultsString + "."
 		}
 
 		// Encode response
 		buf := &bytes.Buffer{}
 		enc := json.NewEncoder(buf)
-		err = enc.Encode(results)
+		err = enc.Encode(response)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("encoding failure"))
@@ -166,6 +200,12 @@ func (s *Searcher) RecoverWorkTitle(idx int) string {
 type SearchResult struct {
 	Text      string
 	WorkTitle string
+}
+
+type SearchResponse struct {
+	Query string
+	Message string
+	Results []SearchResult
 }
 
 // Search takes a query string as a parameter, searches the text using
