@@ -9,7 +9,7 @@ const Controller = {
     
     const form = document.getElementById("form");
     const data = Object.fromEntries(new FormData(form));
-    const response = fetch(`/search?q=${data.query}&s=${data.size}&k=${data.key}`).then((response) => {
+    const response = fetch(`/search?q=${data.query}&s=${data.size}&k=${data.key}&mw=${data.matchWord}`).then((response) => {
       response.json().then((response) => {
         Controller.updateTable(response.Results, response.Query);
         

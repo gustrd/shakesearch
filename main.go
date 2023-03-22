@@ -10,6 +10,7 @@ import (
 	"math"
 	"net/http"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -73,17 +74,26 @@ func handleSearch(searcher Searcher) func(w http.ResponseWriter, r *http.Request
 			openAiApiKey[0] = ""
 		}
 
+		matchWholeWord, ok := r.URL.Query()["mw"]
+		if !ok || len(openAiApiKey[0]) < 1 {
+			openAiApiKey[0] = ""
+		}
+		useMatchWholeWord := false
+		if matchWholeWord[0] == "on" {
+			useMatchWholeWord = true
+		}
+
 		// Call the Search method of the Searcher and encode the results as a JSON response
 		originalQuery := query[0]
 		correctedQuery := ""
 
 		intVar, err := strconv.Atoi(size[0])
-		results := searcher.Search(originalQuery, intVar)
+		results := searcher.Search(originalQuery, intVar, useMatchWholeWord)
 
 		//Verify if results is empty, if it the query can be sent to autocorrect
 		if len(results) == 0 && openAiApiKey[0] != "" {
 			correctedQuery = searcher.Correct(originalQuery, openAiApiKey[0])
-			results = searcher.Search(correctedQuery, intVar)
+			results = searcher.Search(correctedQuery, intVar, useMatchWholeWord)
 		}
 
 		// Prepare used query to response
@@ -203,7 +213,7 @@ type SearchResult struct {
 }
 
 type SearchResponse struct {
-	Query string
+	Query   string
 	Message string
 	Results []SearchResult
 }
@@ -211,11 +221,22 @@ type SearchResponse struct {
 // Search takes a query string as a parameter, searches the text using
 // the suffix array index, and builds a slice of strings containing the
 // surrounding 250 characters of each match found.
-func (s *Searcher) Search(query string, querySize int) []SearchResult {
+func (s *Searcher) Search(query string, querySize int, useMatchWholeWord bool) []SearchResult {
 	// Create lowercase version of the query
 	lowercaseQuery := strings.ToLower(query)
+
 	// Search the text using the suffix array index.
-	idxs := s.SuffixArray.Lookup([]byte(lowercaseQuery), -1)
+	idxs := []int{}
+	if useMatchWholeWord == false {
+		idxs = s.SuffixArray.Lookup([]byte(lowercaseQuery), -1)
+	} else {
+		pattern := regexp.MustCompile(fmt.Sprintf(`\b%s\b`, lowercaseQuery))
+		findAllResult := s.SuffixArray.FindAllIndex(pattern, -1)
+		if len(findAllResult) > 0 {
+			idxs = findAllResult[0]
+		}
+	}
+
 	// Initialize a results slice to store the found matches.
 	results := []SearchResult{}
 	// Iterate over the indices of the found matches.
