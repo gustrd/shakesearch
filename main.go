@@ -175,7 +175,7 @@ func TrimSentences(fullSentences string) string {
 	}
 
 	// Return the string between the separators
-	return fullSentences[firstSeparatorIndex+1 : lastSeparatorIndex+1]
+	return strings.TrimSpace(fullSentences[firstSeparatorIndex+1 : lastSeparatorIndex+1])
 }
 
 // Load reads the contents of the specified file, assigns the contents to the
