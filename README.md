@@ -27,6 +27,7 @@ We have added several new features to ShakeSearch, including:
 Although the focus of this work was on the user's perspective, we have made several technical enhancements to improve the codebase, including:
 
 - Code documentation with comments;
+- Inclusion of unit testing and end-to-end testing to the code;
 - A Dockerfile for easy execution at a Docker container;
 - Atomic commits with "conventional commit" tags at git.
 - Integration of Bootstrap and jQuery libraries to improve user experience;
@@ -40,7 +41,6 @@ If we had more time and resources to develop ShakeSearch, we would consider the 
 - Development of a new front-end with React to improve the design and access to a better table library;
 - Use of a PostgreSQL database with GORM and an algorithm to save data at structured tables for better performance, line number results, and Scene identification;
 - Testing of other LLM solutions to find one with a better cost-result ratio than OpenAI's Da Vinci for correcting misspellings;
-- Inclusion of unit testing and integration testing for the code;
 - Implementation of a feature for downloading results to a CSV file;
 - Use of play or scene as an additional query parameter, with autocomplete to select;
 - Refactoring of the code into different files for easier maintenance and better understanding.
