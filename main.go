@@ -272,7 +272,18 @@ func (s *Searcher) Search(query string, querySize int, useMatchWholeWord bool) [
 		workAct := s.RecoverMatchAct(idx)
 		// Extract a substring around the match (querySize/2 characters before and after).
 		halfQuerySize := int(math.Floor(float64(querySize) / 2.0))
-		textFound := s.CompleteWorks[idx-halfQuerySize : idx+halfQuerySize]
+
+		//Avoids out-of-bound
+		startIndex := idx - halfQuerySize
+		endIndex := idx + halfQuerySize
+
+		if startIndex < 0 {
+			startIndex = 0
+		}
+		if endIndex > len(s.CompleteWorks)-1 {
+			endIndex = len(s.CompleteWorks) - 1
+		}
+		textFound := s.CompleteWorks[startIndex:endIndex]
 		// Replace the line breaks from txt to html line breaks, improving readability
 		textFoundHtml := strings.Replace(textFound, "\r\n", "<br>", -1)
 		// Append at the result array, with the sentences trimmed
