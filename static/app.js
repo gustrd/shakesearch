@@ -64,14 +64,13 @@ const Controller = {
   },
 
   atFilter: () => {
-    // Removes the color from the last filter
-    $('table [style*="background-color: silver;"]').removeAttr('style');
-
-    // Add the new color to the filtere words
+    // Add the new color to the filtered words
     var filterTh = $('th[colspan="2"][style="padding:2px;"]').eq(0);
     var filterText = filterTh.find('input').val();
     
-    if (filterText != ""){
+    // Cannot let it mess with linebreaks, TODO a better solution, but will need to change the library
+    const unfilterableTermsString = "<br><span style=\"background-color: silver\"><span style=\"background-color: yellow\">"
+    if (filterText != "" && !unfilterableTermsString.includes(filterText)){
       // Highlight all the table cells containing the search term
       $("td").filter(function() {
         // Use a regular expression to match only the exact word, case insensitive
