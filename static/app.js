@@ -25,18 +25,26 @@ const Controller = {
             });
           }
           else{
-              //Show result message
-              document.getElementById('result-message').style.display = 'block';
-              document.getElementById('result-message').textContent = "There was an error making the search, please try again.";
-  
-              //Stops loading spinner
-              document.getElementById('loading-screen').style.display = 'none';
-              
-              //Hides the table
-              document.getElementById('table').style.display = 'none';
+            Controller.onError(response.error)
           }
-          
-        });
+        }
+      ).catch(
+        (error) => {
+          Controller.onError(error)
+        }
+      );
+  },
+
+  onError: (error) => {
+    //Show result message
+    document.getElementById('result-message').style.display = 'block';
+    document.getElementById('result-message').textContent = "There was an error making the search, please try again. Error: " + error;
+
+    //Stops loading spinner
+    document.getElementById('loading-screen').style.display = 'none';
+  
+    //Hides the table
+    document.getElementById('table').style.display = 'none';
   },
 
   updateTable: (results, searchTerm, useMatchWholeWord) => {
