@@ -9,18 +9,34 @@ const Controller = {
     
     const form = document.getElementById("form");
     const data = Object.fromEntries(new FormData(form));
-    const response = fetch(`/search?q=${data.query}&s=${data.size}&k=${data.key}&mw=${data.matchWord}`).then((response) => {
-      response.json().then((response) => {
-        Controller.updateTable(response.Results, response.Query, response.MatchWholeWord);
-        
-        //Show result message
-        document.getElementById('result-message').style.display = 'block';
-        document.getElementById('result-message').textContent = response.Message;
-
-        //Stops loading spinner
-        document.getElementById('loading-screen').style.display = 'none';
-      });
-    });
+    const response = fetch(`/search?q=${data.query}&s=${data.size}&k=${data.key}&mw=${data.matchWord}`)
+      .then(
+        (response) => {
+          if (response.ok) {
+            response.json().then((responseJson) => {          
+              Controller.updateTable(responseJson.Results, responseJson.Query, responseJson.MatchWholeWord);
+              
+              //Show result message
+              document.getElementById('result-message').style.display = 'block';
+              document.getElementById('result-message').textContent = responseJson.Message;
+  
+              //Stops loading spinner
+              document.getElementById('loading-screen').style.display = 'none';
+            });
+          }
+          else{
+              //Show result message
+              document.getElementById('result-message').style.display = 'block';
+              document.getElementById('result-message').textContent = "There was an error making the search, please try again.";
+  
+              //Stops loading spinner
+              document.getElementById('loading-screen').style.display = 'none';
+              
+              //Hides the table
+              document.getElementById('table').style.display = 'none';
+          }
+          
+        });
   },
 
   updateTable: (results, searchTerm, useMatchWholeWord) => {
