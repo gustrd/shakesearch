@@ -39,7 +39,7 @@ const Controller = {
     // Call a function when the table is loaded
     if (!firstLoad){
       // Because of a bug at the library this adjust is needed, or the filter becomes doubled.
-      $('th[colspan="2"][style="padding:2px;"]').remove();
+      $('th[style="padding:2px;"]').remove();
     }
 
     $('#table').fancyTable({
