@@ -11,6 +11,7 @@ neither the original archteture. All the focus was at creating new feature.
 
 We have added several new features to ShakeSearch, including:
 
+- Hygienization of the complete works file to remove references to Project Gutenberg, which previously displayed irrelevant results;
 - Case-insensitive search to make it easier for users to find what they are looking for;
 - A loading animation to let users know when they are awaiting results;
 - User-friendly success and error messages;
