@@ -11,7 +11,7 @@ const Controller = {
     const data = Object.fromEntries(new FormData(form));
     const response = fetch(`/search?q=${data.query}&s=${data.size}&k=${data.key}&mw=${data.matchWord}`).then((response) => {
       response.json().then((response) => {
-        Controller.updateTable(response.Results, response.Query);
+        Controller.updateTable(response.Results, response.Query, response.MatchWholeWord);
         
         //Show result message
         document.getElementById('result-message').style.display = 'block';
@@ -23,7 +23,7 @@ const Controller = {
     });
   },
 
-  updateTable: (results, searchTerm) => {
+  updateTable: (results, searchTerm, useMatchWholeWord) => {
     // Inserts the rows
     const tableBody = document.getElementById("table-body");
     const rows = [];
@@ -58,8 +58,14 @@ const Controller = {
     
     // Highlight all the table cells containing the search term
     $("td").filter(function() {
-      // Use a regular expression to match only the exact word, case insensitive
-      var regex = new RegExp(searchTerm, "i");
+      // Use a regular expression to match the correspondent words
+      let regex = new RegExp();
+      if (useMatchWholeWord){
+        regex = new RegExp("\\b" + searchTerm + "\\b", "i");
+      } else {
+        regex = new RegExp(searchTerm, "i");
+      }
+
       return regex.test($(this).text());
     }).html(function(_, html) {
       // Wrap the matching word in a span with a yellow background

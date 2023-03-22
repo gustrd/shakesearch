@@ -53,6 +53,19 @@ type Searcher struct {
 	SuffixArray            *suffixarray.Index
 }
 
+// Define the Results structs
+type SearchResult struct {
+	Text      string
+	WorkTitle string
+}
+
+type SearchResponse struct {
+	Query          string
+	Message        string
+	MatchWholeWord bool
+	Results        []SearchResult
+}
+
 // handleSearch takes a Searcher as a parameter and returns an HTTP handler function
 func handleSearch(searcher Searcher) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -108,6 +121,7 @@ func handleSearch(searcher Searcher) func(w http.ResponseWriter, r *http.Request
 		response := SearchResponse{}
 		response.Results = results
 		response.Query = finalQuery
+		response.MatchWholeWord = useMatchWholeWord
 
 		resultCount := len(response.Results)
 		resultsString := ""
@@ -207,17 +221,6 @@ func (s *Searcher) RecoverWorkTitle(idx int) string {
 	return "?"
 }
 
-type SearchResult struct {
-	Text      string
-	WorkTitle string
-}
-
-type SearchResponse struct {
-	Query   string
-	Message string
-	Results []SearchResult
-}
-
 // Search takes a query string as a parameter, searches the text using
 // the suffix array index, and builds a slice of strings containing the
 // surrounding 250 characters of each match found.
@@ -233,7 +236,9 @@ func (s *Searcher) Search(query string, querySize int, useMatchWholeWord bool) [
 		pattern := regexp.MustCompile(fmt.Sprintf(`\b%s\b`, lowercaseQuery))
 		findAllResult := s.SuffixArray.FindAllIndex(pattern, -1)
 		if len(findAllResult) > 0 {
-			idxs = findAllResult[0]
+			for i := 0; i < len(findAllResult); i++ {
+				idxs = append(idxs, findAllResult[i][0])
+			}
 		}
 	}
 
