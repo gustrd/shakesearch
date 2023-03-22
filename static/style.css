@@ -86,6 +86,23 @@ input[type='submit']:hover {
   background-color: #f5f5f5;
 }
 
+/* Form advanced configurations */
+
+.advanced-configurations {
+  display: none;
+}
+
+.clickable-text {
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.clickable-text:hover {
+  color: red;
+  text-decoration: none;
+}
+
 /* Loading spinner design */
 
 #loading-screen {
