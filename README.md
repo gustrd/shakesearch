@@ -20,6 +20,7 @@ We have added several new features to ShakeSearch, including:
 - A new smart table with pagination to display results more efficiently, including sorting and filtering options;
 - Highlighting of filtered word parts, words, or sentences in silver;
 - A second column in the results to show which play and act the system identified the resulting text to be in;
+- Downloading results to a CSV file;
 - An advanced option to configure the average length of the resulting texts;
 - An advanced option to provide an OpenAI API key, which can be used to correct misspellings if no results were originally found.
 
@@ -42,7 +43,6 @@ If we had more time and resources to develop ShakeSearch, we would consider the 
 - Development of a new front-end with React to improve the design and access to a better table library;
 - Use of a PostgreSQL database with GORM and an algorithm to save data at structured tables for better performance, line number results, and Scene identification;
 - Testing of other LLM solutions to find one with a better cost-result ratio than OpenAI's Da Vinci for correcting misspellings;
-- Implementation of a feature for downloading results to a CSV file;
 - Use of play or scene as an additional query parameter, with autocomplete to select;
 - Refactoring of the code into different files for easier maintenance and better understanding.
 

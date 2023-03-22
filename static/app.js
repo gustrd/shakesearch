@@ -19,6 +19,9 @@ const Controller = {
               //Show result message
               document.getElementById('result-message').style.display = 'block';
               document.getElementById('result-message').textContent = responseJson.Message;
+
+              //Shows the download .csv file link
+              document.getElementById('download-csv').style.display = 'block';
   
               //Stops loading spinner
               document.getElementById('loading-screen').style.display = 'none';
@@ -60,26 +63,8 @@ const Controller = {
     var table = document.getElementById("table");
     table.style.display = "table";
 
-    // Call a function when the table is loaded
-    if (!firstLoad){
-      // Because of a bug at the library this adjust is needed, or the filter becomes doubled.
-      $('th[style="padding:2px;"]').remove();
-    }
+    Controller.configurePagination(true);
 
-    $('#table').fancyTable({
-      sortColumn:0,
-      sortable: true,
-      pagination: true,
-      perPage:5,
-      globalSearch:true,
-      inputPlaceholder:"Type here if you want to filter by an additional sentence...",
-      onUpdate:function(){
-        Controller.atFilter();
-      }
-    });
-      
-    firstLoad = false;
-    
     // Highlight all the table cells containing the search term
     $("td").filter(function() {
       // Use a regular expression to match the correspondent words
@@ -115,7 +100,32 @@ const Controller = {
         return html.replace(new RegExp(filterText, "gi"), '<span style="background-color: silver;">$&</span>');
       });
     }
-    
+  },
+
+  configurePagination: (enable) => {
+    if (!firstLoad){
+      // Because of a bug at the library this adjust is needed, or the filter becomes doubled.
+      $('th[style="padding:2px;"]').remove();
+    }
+
+    $('#table').fancyTable({
+      sortColumn:0,
+      sortable: true,
+      pagination: enable,
+      perPage:5,
+      globalSearch:true,
+      inputPlaceholder:"Type here if you want to filter by an additional sentence...",
+      onUpdate:function(){
+        Controller.atFilter();
+      }
+    });
+      
+    firstLoad = false;
+
+    //Removes footer if pagination was disabled
+    if (enable == false){
+      $("#table tfoot").remove();
+    }
   }
 };
 
@@ -159,4 +169,32 @@ function toggleDivAdvancedConfigurations() {
   } else {
     div.style.display = "none";
   }
+}
+
+function downloadCsv() {
+
+  // Removes pagination
+  Controller.configurePagination(false);
+
+  // Creates file
+  const CsvString = $("table").table2csv('return');
+
+  /*
+   * Make CSV downloadable
+   */
+  var downloadLink = document.createElement("a");
+  var blob = new Blob(["\ufeff", CsvString]);
+  var url = URL.createObjectURL(blob);
+  downloadLink.href = url;
+  downloadLink.download = "data.csv";
+
+  /*
+   * Actually download CSV
+   */
+  document.body.appendChild(downloadLink);
+  downloadLink.click();
+  document.body.removeChild(downloadLink);
+
+  //Enable pagination again
+  Controller.configurePagination(true);
 }
