@@ -150,7 +150,7 @@ func TestRecoverMatchAct(t *testing.T) {
 	}
 }
 
-func TestSearch(t *testing.T) {
+func TestSearchMatchWholeWordFalse(t *testing.T) {
 	// Set up test variables
 	testCompleteWorks := "To be or not to be, that is the question:\r\nWhether 'tis nobler in the mind to suffer\r\nThe slings and arrows of outrageous fortune,\r\nOr to take arms against a sea of troubles,\r\nAnd by opposing end them?"
 	completeWorksLowercase := strings.ToLower(testCompleteWorks)
@@ -176,6 +176,29 @@ func TestSearch(t *testing.T) {
 			Play: "?",
 		},
 	}
+	if !reflect.DeepEqual(result, expectedResult) {
+		t.Errorf("Expected result to be %v but got %v", expectedResult, result)
+	}
+}
+
+func TestSearchMatchWholeWordTrue(t *testing.T) {
+	// Set up test variables
+	testCompleteWorks := "To be or not to be, that is the question:\r\nWhether 'tis nobler in the mind to suffer\r\nThe slings and arrows of outrageous fortune,\r\nOr to take arms against a sea of troubles,\r\nAnd by opposing end them?"
+	completeWorksLowercase := strings.ToLower(testCompleteWorks)
+	searcher := &Searcher{
+		SuffixArray:   suffixarray.New([]byte(completeWorksLowercase)),
+		CompleteWorks: testCompleteWorks,
+	}
+	query := "questio"
+	querySize := 10
+	useMatchWholeWord := true
+
+	// Call the function
+	result := searcher.Search(query, querySize, useMatchWholeWord)
+
+	// Check the result
+	expectedResult := []SearchResult{}
+	
 	if !reflect.DeepEqual(result, expectedResult) {
 		t.Errorf("Expected result to be %v but got %v", expectedResult, result)
 	}
