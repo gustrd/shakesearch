@@ -1,3 +1,3 @@
-module pulley.com/shakesearch
+module gustrd/shakesearch
 
 go 1.18
