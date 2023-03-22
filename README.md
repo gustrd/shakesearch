@@ -1,30 +1,47 @@
 # ShakeSearch
 
-Welcome to the Pulley Shakesearch Take-home Challenge! In this repository,
-you'll find a simple web app that allows a user to search for a text string in
-the complete works of Shakespeare.
+Welcome to ShakeSearch, a web app that allows users to search for a text string in the complete works of Shakespeare. This repository contains the code for Gustavo's Pulley Shakesearch Take-home Challenge.
 
-You can see a live version of the app at
-https://pulley-shakesearch.onrender.com/. Try searching for "Hamlet" to display
-a set of results.
+You can try a live version of the app at https://gustrd-shakesearch.onrender.com/ . Search for "Macbeth" to display a set of results.
 
-In it's current state, however, the app is in rough shape. The search is
-case sensitive, the results are difficult to read, and the search is limited to
-exact matches.
+The original problema was analyzed from the  **user's perspective**, so the changes do not changed the technology stack,
+neither the original archteture. All the focus was at creating new feature.
 
-## Your Mission
+## New Features
 
-Improve the app! Think about the problem from the **user's perspective**
-and prioritize your changes according to what you think is most useful.
+We have added several new features to ShakeSearch, including:
 
-You can approach this with a back-end, front-end, or full-stack focus.
+- Case-insensitive search to make it easier for users to find what they are looking for;
+- A loading animation to let users know when they are awaiting results;
+- User-friendly success and error messages;
+- An advanced option for Match Whole Word search;
+- Highlighting of the searched word or sentence in yellow, based on the Match Whole Word configuration;
+- A new smart table with pagination to display results more efficiently, including sorting and filtering options;
+- Highlighting of filtered word parts, words, or sentences in silver;
+- A second column in the results to show which play and act the system identified the resulting text to be in;
+- An advanced option to configure the average length of the resulting texts;
+- An advanced option to provide an OpenAI API key, which can be used to correct misspellings if no results were originally found.
 
-## Evaluation
+## Technical Enhancements
 
-We will be primarily evaluating based on how well the search works for users. A search result with a lot of features (i.e. multi-words and mis-spellings handled), but with results that are hard to read would not be a strong submission.
+Although the focus of this work was on the user's perspective, we have made several technical enhancements to improve the codebase, including:
 
-## Submission
+- Code documentation with comments;
+- A Dockerfile for easy execution at a Docker container;
+- Atomic commits with "conventional commit" tags at git.
+- Integration of Bootstrap and jQuery libraries to improve user experience;
+- Use of the open-source FancyTable library for advanced table features;
+- Update of Go version to 1.18.
 
-1. Fork this repository and send us a link to your fork after pushing your changes.
-2. Render (render.com) hosting, the application deploys cleanly from a public url.
-3. In your submission, share with us what changes you made and how you would prioritize changes if you had more time.
+## Future Changes Priority
+
+If we had more time and resources to develop ShakeSearch, we would consider the following changes:
+
+- Development of a new front-end with React to improve the design and access to a better table library;
+- Use of a PostgreSQL database with GORM and an algorithm to save data at structured tables for better performance, line number results, and Scene identification;
+- Testing of other LLM solutions to find one with a better cost-result ratio than OpenAI's Da Vinci for correcting misspellings;
+- Inclusion of unit testing and integration testing for the code;
+- Implementation of a feature for downloading results to a CSV file;
+- Use of play or scene as an additional query parameter, with autocomplete to select;
+- Refactoring of the code into different files for easier maintenance and better understanding.
+
