@@ -4,19 +4,19 @@ Welcome to ShakeSearch, a web app that allows users to search for a text string 
 
 You can try a live version of the app at https://gustrd-shakesearch.onrender.com/ . Search for "Macbeth" to display a set of results.
 
-The original problema was analyzed from the  **user's perspective**, so the changes do not changed the technology stack,
-neither the original archteture. All the focus was at creating new feature.
+The original problem was analyzed from the  **user's perspective**, so the changes do not changed the technology stack,
+neither the original architecture. All the focus was at creating new features.
 
 ## New Features
 
-We have added several new features to ShakeSearch, including:
+I have added several new features to ShakeSearch, including:
 
-- Hygienization of the complete works file to remove references to Project Gutenberg, which previously displayed irrelevant results;
+- Hygienization of the complete work file to remove references to Project Gutenberg, which previously displayed irrelevant results;
 - Case-insensitive search to make it easier for users to find what they are looking for;
 - A loading animation to let users know when they are awaiting results;
 - User-friendly success and error messages;
 - An advanced option for Match Whole Word search;
-- Highlighting of the searched word or sentence in yellow, based on the Match Whole Word configuration;
+- Highlighting of the searched word or sentence in yellow;
 - A new smart table with pagination to display results more efficiently, including sorting and filtering options;
 - Highlighting of filtered word parts, words, or sentences in silver;
 - A second column in the results to show which play and act the system identified the resulting text to be in;
@@ -26,7 +26,7 @@ We have added several new features to ShakeSearch, including:
 
 ## Technical Enhancements
 
-Although the focus of this work was on the user's perspective, we have made several technical enhancements to improve the codebase, including:
+Although the focus of this work was on the user's perspective, I have made several technical enhancements to improve the codebase, including:
 
 - Code documentation with comments;
 - Inclusion of unit testing and end-to-end testing to the code;
@@ -38,10 +38,10 @@ Although the focus of this work was on the user's perspective, we have made seve
 
 ## Future Changes Priority
 
-If we had more time and resources to develop ShakeSearch, we would consider the following changes:
+If I had more time and resources to develop ShakeSearch, I would consider the following changes:
 
 - Development of a new front-end with React to improve the design and access to a better table library;
-- Use of a PostgreSQL database with GORM and an algorithm to save data at structured tables for better performance, line number results, and Scene identification;
+- Use of a PostgreSQL database with GORM and an algorithm to save data on structured tables for better performance, line number results, and Scene identification;
 - Testing of other LLM solutions to find one with a better cost-result ratio than OpenAI's Da Vinci for correcting misspellings;
 - Use of play or scene as an additional query parameter, with autocomplete to select;
 - Refactoring of the code into different files for easier maintenance and better understanding.
