@@ -130,14 +130,14 @@ func handleSearch(searcher Searcher) func(w http.ResponseWriter, r *http.Request
 		} else if resultCount == 1 {
 			resultsString = "a total of " + strconv.Itoa(resultCount) + " result"
 		} else {
-			resultsString = "no results. Please try with another query"
+			resultsString = "no results. Please try with another sentence or word"
 		}
 
 		if correctedQuery != "" {
-			response.Message = "The query was corrected to '" + correctedQuery + "' by the OpenAI API. The search returned " +
+			response.Message = "Your search was corrected to \"" + correctedQuery + "\" by the OpenAI API. The search returned " +
 				resultsString + "."
 		} else {
-			response.Message = "The query was '" + originalQuery + "'. The search returned " +
+			response.Message = "You searched for \"" + originalQuery + "\". The search returned " +
 				resultsString + "."
 		}
 
