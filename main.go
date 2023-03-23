@@ -15,9 +15,15 @@ import (
 	"strings"
 )
 
+// Configure value under where there will be need to cutSentences at whitespaces (better when the querySize is small)
+const cutAtWhitespacesValue = 500
+
 func main() {
 	// Initialize a new Searcher struct
 	searcher := Searcher{}
+	if cutAtWhitespacesValue != 0 {
+		searcher.cutAtWhitespacesValue = cutAtWhitespacesValue
+	}
 
 	// Load the contents of "completeworks.txt" into the Searcher
 	err := searcher.Load("completeworks.txt")
@@ -51,6 +57,7 @@ type Searcher struct {
 	CompleteWorks          string
 	CompleteWorksLowercase string
 	SuffixArray            *suffixarray.Index
+	cutAtWhitespacesValue  int
 }
 
 // Define the Results structs
@@ -159,15 +166,21 @@ func handleSearch(searcher Searcher) func(w http.ResponseWriter, r *http.Request
 // String with the chars that are considered to be sentence separators, to identify the beginning
 // and the end os sentences
 var (
-	sentenceSeparatorsString = ".,?! "
+	sentenceSeparatorsString = ".,?!"
 )
 
 // Remove the incomplete sentences at the beggining and at the end of the original string
-func TrimSentences(fullSentences string) string {
+func TrimSentences(fullSentences string, cutAtWhitespaces bool) string {
+	currentSentenceSeparators := sentenceSeparatorsString
+	// Verify if there is need to cut at whitespaces
+	if cutAtWhitespaces {
+		currentSentenceSeparators += " "
+	}
+
 	// Find the index of the first separator at the string
-	firstSeparatorIndex := strings.IndexAny(fullSentences, sentenceSeparatorsString)
+	firstSeparatorIndex := strings.IndexAny(fullSentences, currentSentenceSeparators)
 	// Find the index of the last separator at the string
-	lastSeparatorIndex := strings.LastIndexAny(fullSentences, sentenceSeparatorsString)
+	lastSeparatorIndex := strings.LastIndexAny(fullSentences, currentSentenceSeparators)
 
 	// If they are not found or are the same return an empty string
 	if firstSeparatorIndex < 0 || lastSeparatorIndex < 0 || firstSeparatorIndex == lastSeparatorIndex {
@@ -247,6 +260,9 @@ func (s *Searcher) RecoverMatchAct(idx int) string {
 // the suffix array index, and builds a slice of strings containing the
 // surrounding 250 characters of each match found.
 func (s *Searcher) Search(query string, querySize int, useMatchWholeWord bool) []SearchResult {
+	// Configure if there will be need to cutSentences at whitespaces (better when the querySize is small)
+	cutAtWhitespaces := querySize < cutAtWhitespacesValue
+
 	// Create lowercase version of the query
 	lowercaseQuery := strings.ToLower(query)
 
@@ -287,7 +303,7 @@ func (s *Searcher) Search(query string, querySize int, useMatchWholeWord bool) [
 		// Replace the line breaks from txt to html line breaks, improving readability
 		textFoundHtml := strings.Replace(textFound, "\r\n", "<br>", -1)
 		// Append at the result array, with the sentences trimmed
-		trimmedSentence := TrimSentences(textFoundHtml)
+		trimmedSentence := TrimSentences(textFoundHtml, cutAtWhitespaces)
 		if trimmedSentence != "" {
 			play := workTitle
 			if workAct != "" {

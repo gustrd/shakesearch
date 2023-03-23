@@ -22,6 +22,7 @@ func (h *SearchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func Test_E2E_HandleSearch(t *testing.T) {
 	// Initialize a new Searcher struct
 	searcher := Searcher{}
+	searcher.cutAtWhitespacesValue = 500
 
 	// Load the contents of "completeworks.txt" into the Searcher
 	err := searcher.Load("completeworks.txt")
@@ -32,7 +33,7 @@ func Test_E2E_HandleSearch(t *testing.T) {
 	// Create a test server using the SearchHandler
 	addr := "localhost:3001"
 	server := &http.Server{Addr: addr, Handler: &SearchHandler{Searcher: searcher}}
-	var testfinish = false;
+	var testfinish = false
 	go func() {
 		if err := server.ListenAndServe(); err != nil && !testfinish {
 			t.Errorf("server error: %v", err)
@@ -41,7 +42,7 @@ func Test_E2E_HandleSearch(t *testing.T) {
 	defer server.Close()
 
 	// Send a search request to the server
-	url := "http://" + addr + "/search?q=Luke&s=50&k=&mw=on"
+	url := "http://" + addr + "/search?q=Luke&s=50&k=&mw=disabled"
 	resp, err := http.Get(url)
 	if err != nil {
 		t.Fatal(err)
@@ -62,9 +63,11 @@ func Test_E2E_HandleSearch(t *testing.T) {
 
 	// Verify that the response has the expected query, message, and results
 	expectedQuery := "Luke"
-	expectedMessage := "The query was 'Luke'. The search returned a total of 3 results."
+	expectedMessage := "You searched for \"Luke\". The search returned a total of 5 results."
 	expectedResults := []SearchResult{
 		{Text: "will presently to Saint Luke's; there,<br>    at", Play: "MACBETH - ACT III"},
+		{Text: "dy'd<br>    Even in the lukewarm blood of", Play: "THE LIFE OF KING HENRY V - ACT I"},
+		{Text: "Smoke and lukewarm water<br>    Is", Play: "THE TEMPEST - ACT III"},
 		{Text: "old priest at Saint Luke’s church is at", Play: "THE TAMING OF THE SHREW - ACT IV"},
 		{Text: "me to go to Saint Luke’s to bid<br>the", Play: "THE TAMING OF THE SHREW - ACT IV"},
 	}
@@ -81,13 +84,27 @@ func Test_E2E_HandleSearch(t *testing.T) {
 	testfinish = true
 }
 
-func TestTrimSentences(t *testing.T) {
+func TestTrimSentences_Normal(t *testing.T) {
 	// Set up test variables
 	fullSentences := "entence. This is the second complete sentence. This is the third complete sentence. Thi"
 	expectedResult := "This is the second complete sentence. This is the third complete sentence."
 
 	// Call the function
-	result := TrimSentences(fullSentences)
+	result := TrimSentences(fullSentences, true)
+
+	// Check the result
+	if result != expectedResult {
+		t.Errorf("Expected result to be %q but got %q", expectedResult, result)
+	}
+}
+
+func TestTrimSentences_AtWhitespaces(t *testing.T) {
+	// Set up test variables
+	fullSentences := "entence This is the second complete sentence. This is the third complete sentence. Thi"
+	expectedResult := "This is the second complete sentence. This is the third complete sentence."
+
+	// Call the function
+	result := TrimSentences(fullSentences, true)
 
 	// Check the result
 	if result != expectedResult {
@@ -198,7 +215,7 @@ func TestSearchMatchWholeWordTrue(t *testing.T) {
 
 	// Check the result
 	expectedResult := []SearchResult{}
-	
+
 	if !reflect.DeepEqual(result, expectedResult) {
 		t.Errorf("Expected result to be %v but got %v", expectedResult, result)
 	}
