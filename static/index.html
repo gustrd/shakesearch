@@ -25,20 +25,22 @@
 
             <p onclick="toggleDivAdvancedConfigurations()" class="clickable-text">Advanced Configurations</p>
             <div id="advanced-configurations" class="advanced-configurations">
-              <label for="size">Average response size:</label>
-              <input type="number" id="size" name="size" min="50" max="600" value="500">
-
-              <label for="size">OpenAI API Key (optional)</label>
-              <input type="text" id="key" name="key">
-
               <label for="size">Match Whole Word</label>
               <input type="checkbox" id="matchWord" name="matchWord">
+              <br>
+              <label for="size">Average response size:</label>
+              <input type="number" id="size" name="size" min="50" max="600" value="500">
+              <br>
+              <label for="size">OpenAI API Key (optional)</label>
+              <input type="text" id="key" name="key">
+              <br>
+              <p>The OpenAI API Key is optional and will be used only if your result returns no match. It will attempt to correct any misspellings.</p>
             </div>
 
             <button type="submit">Search</button>
         </form>
     </p>
-    <p>The OpenAI API Key is optional and will be used only if your result returns no match. It will attempt to correct any misspellings.</p>
+    
     <br>
     <p id="result-message" style="display:none;">No search made yet.</p>
     <p>
