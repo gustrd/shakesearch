@@ -48,5 +48,9 @@ If I had more time and resources to develop ShakeSearch, I would consider the fo
 - Use of a PostgreSQL database with GORM and an algorithm to save data on structured tables for better performance, line number results, and Scene identification;
 - Testing of other LLM solutions to find one with a better cost-result ratio than OpenAI's Da Vinci for correcting misspellings;
 - Use of play or scene as an additional query parameter, with autocomplete to select;
-- Refactoring of the code into different files for easier maintenance and better understanding.
+- Refactoring of the code into different files for easier maintenance and better understanding;
+- Search with wildcards and Boolean operators;
+- Autocompletion algorithm at the query field to offer suggestions;
+- New column with translation of sentences to modern english;
+- Dark mode.
 
