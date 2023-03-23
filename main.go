@@ -332,7 +332,7 @@ func (s *Searcher) Correct(query string, apiKey string) string {
 	// Set API request data
 	data := map[string]interface{}{
 		"model": "text-davinci-003",
-		"prompt": "The following sentece from Shakespeare's work is misspelled. Give me the correct sentence.\n\"" +
+		"prompt": "The following sentece from Shakespeare's work is misspelled. Give me the correct sentence, including punctuation.\n\"" +
 			query +
 			"\"",
 		"temperature":       0.7,
@@ -345,14 +345,14 @@ func (s *Searcher) Correct(query string, apiKey string) string {
 	// Marshal data to JSON
 	payload, err := json.Marshal(data)
 	if err != nil {
-		panic(err)
+		return ""
 	}
 
 	// Create HTTP client and request
 	client := &http.Client{}
 	req, err := http.NewRequest("POST", apiURL, bytes.NewBuffer(payload))
 	if err != nil {
-		panic(err)
+		return ""
 	}
 
 	// Set headers on request
@@ -363,7 +363,7 @@ func (s *Searcher) Correct(query string, apiKey string) string {
 	// Send request and get response
 	res, err := client.Do(req)
 	if err != nil {
-		panic(err)
+		return ""
 	}
 	defer res.Body.Close()
 
@@ -371,11 +371,19 @@ func (s *Searcher) Correct(query string, apiKey string) string {
 	var response OpenAiJson
 	err = json.NewDecoder(res.Body).Decode(&response)
 	if err != nil {
-		panic(err)
+		return ""
 	}
 
+	responseString := response.Choices[0].Text
+
+	// Define a regular expression that matches special characters
+	re := regexp.MustCompile(`[^\w]+$`)
+
+	// Remove special characters from the end of the string
+	responseString = re.ReplaceAllString(responseString, "")
+
 	//Remove quotes and new lines
-	responseString := strings.ReplaceAll(response.Choices[0].Text, "\"", "")
+	responseString = strings.ReplaceAll(responseString, "\"", "")
 	responseString = strings.ReplaceAll(responseString, "\n", "")
 
 	// Return string without the new lines and without double quotes
