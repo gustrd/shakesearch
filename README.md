@@ -7,6 +7,10 @@ You can try a live version of the app at https://gustrd-shakesearch.onrender.com
 The original problem was analyzed from the  **user's perspective**, so the changes do not changed the technology stack,
 neither the original architecture. All the focus was at creating new features.
 
+Here is a short video showing the the features: 
+
+https://user-images.githubusercontent.com/91472747/227320375-36557f8d-13cf-4f0d-a0bb-a7c6749702db.mp4
+
 ## New Features
 
 I have added several new features to ShakeSearch, including:
