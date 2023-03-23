@@ -1,7 +1,9 @@
 let firstLoad = true;
+let evStored;
 
 const Controller = {
   search: (ev) => {
+    evStored = ev;
     ev.preventDefault();
 
     // Start loading spinner
@@ -103,8 +105,12 @@ const Controller = {
   },
 
   configurePagination: (enable) => {
-    if (!firstLoad){
-      // Because of a bug at the library this adjust is needed, or the filter becomes doubled.
+    if (!firstLoad || enable == false){
+      // Because of a bug at the library this adjust is needed, or the filter becomes doubled ans it breaks the csv export
+      $('th[style="padding:2px;"]').each(function() {
+        $(this).closest('tr').remove();
+      });
+
       $('th[style="padding:2px;"]').remove();
     }
 
@@ -113,7 +119,7 @@ const Controller = {
       sortable: true,
       pagination: enable,
       perPage:5,
-      globalSearch:true,
+      globalSearch:enable,
       inputPlaceholder:"Type here if you want to filter by an additional sentence...",
       onUpdate:function(){
         Controller.atFilter();
@@ -177,7 +183,16 @@ function downloadCsv() {
   Controller.configurePagination(false);
 
   // Creates file
-  const CsvString = $("table").table2csv('return');
+  let CsvString = $("table").table2csv('return');
+
+  // Replace all <span> tags with their text content
+  CsvString = CsvString.replace(/<span\s+.*?style="[^"]*".*?>(.*?)<\/span>/g, '$1');
+
+  // Replace all <br> tags to line breaks
+  CsvString = CsvString.replace(/<br>/g, '\n');
+
+  // Replace empty lines
+  CsvString = CsvString.replace("\"\",\"\"\n", '');
 
   /*
    * Make CSV downloadable
@@ -195,6 +210,6 @@ function downloadCsv() {
   downloadLink.click();
   document.body.removeChild(downloadLink);
 
-  //Enable pagination again
-  Controller.configurePagination(true);
+  // Make the search again to configure the table correctly
+  Controller.search(evStored);
 }
