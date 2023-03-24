@@ -121,6 +121,9 @@ const Controller = {
       perPage:5,
       globalSearch:enable,
       inputPlaceholder:"Type here if you want to filter by an additional sentence...",
+      beforeUpdate:function(){
+        $('#table span[style="background-color: silver;"]').each(function() {$(this).replaceWith($(this).text());});
+      },
       onUpdate:function(){
         Controller.atFilter();
       }
