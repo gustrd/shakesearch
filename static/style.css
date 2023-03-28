@@ -17,6 +17,176 @@ html {
   line-height: 1.4;
 }
 
+/* Body design */
+
+container {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Form design */
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-color: #f5f5f5;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1);
+  font-family: 'Helvetica Neue', sans-serif;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  text-align: left;
+}
+
+input[type='query'],
+input[type='size'],
+input[type='key'],
+textarea {
+  display: block;
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border-radius: 0.25rem;
+  border: none;
+  background-color: #f8f8f8;
+  box-shadow: 0 0 0.25rem rgba(0, 0, 0, 0.1);
+  font-size: 1rem;
+  font-family: 'Helvetica Neue', sans-serif;
+}
+
+input[type='submit'] {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  margin-top: 1rem;
+  border-radius: 0.25rem;
+  border: none;
+  background-color: #f5f5f5;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+input[type='submit']:hover {
+  background-color: #f5f5f5;
+}
+
+/* Form advanced configurations */
+
+.advanced-configurations {
+  display: none;
+}
+
+.clickable-text {
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.clickable-text:hover {
+  color: red;
+  text-decoration: none;
+}
+
+/* Loading spinner design */
+
+#loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  display: none;
+}
+
+#loader {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -50px;
+  margin-left: -50px;
+  width: 100px;
+  height: 100px;
+  
+}
+#loader::before {
+  content: "";
+  box-sizing: border-box;
+  position: absolute;
+  inset: 0px;
+  border-radius: 50%;
+  border: 5px solid #FFF;
+  animation: prixClipFix 2s linear infinite ;
+}
+
+@keyframes rotate {
+  100%   {transform: rotate(360deg)}
+}
+
+@keyframes prixClipFix {
+    0%   {clip-path:polygon(50% 50%,0 0,0 0,0 0,0 0,0 0)}
+    25%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 0,100% 0,100% 0)}
+    50%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,100% 100%,100% 100%)}
+    75%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 100%)}
+    100% {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 0)}
+}
+
+/* Table design */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-family: 'Helvetica Neue', sans-serif;
+}
+
+thead {
+  background-color: #f5f5f5cc;
+}
+
+thead th {
+  padding: 1rem;
+  font-weight: bold;
+  text-align: left;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f8f8f8;
+}
+
+tbody td {
+  padding: 1rem;
+  border-bottom: 1px solid #ddd;
+}
+
+tbody td:last-child {
+  border-right: 1px solid #ddd;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
 /*
    * Remove text-shadow in selection highlight:
    * https://twitter.com/miketaylr/status/12228805301
@@ -193,7 +363,6 @@ textarea {
      ========================================================================== */
 
 @media print {
-  *,
   *::before,
   *::after {
     background: #fff !important;
